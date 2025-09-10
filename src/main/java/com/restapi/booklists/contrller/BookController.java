@@ -117,6 +117,26 @@ public class BookController implements bookConstant {
         }
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<Object> searchBook(@RequestParam(required = false) String name,@RequestParam(required = false) String description ,@RequestParam(required = false) Integer categoryId) throws Exception{
+        logger.info("start searchBook");
+        CommonResponse commonResponse = new CommonResponse();
+        try {
+            List<BookEntity> book = bookService.searchBooks(name,description,categoryId);
+            commonResponse.setStatus(STATUS_SUCCESS);
+            commonResponse.setResultData(book);
+            return new ResponseEntity<>(commonResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            ErrorResponse errorResponse = new ErrorResponse(STATUS_ERROR,e.getMessage());
+            return new ResponseEntity<>(errorResponse,HttpStatus.INTERNAL_SERVER_ERROR);
+        }finally {
+            logger.info("end searchBook");
+        }
+
+    }
+
+
+
 
 
 }

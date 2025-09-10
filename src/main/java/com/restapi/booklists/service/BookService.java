@@ -50,4 +50,8 @@ public class BookService {
         }
         return "delete fail";
     }
+
+    public List<BookEntity> searchBooks(String name,String description ,Integer categoryId){
+        return bookRepository.findBookByCriteria(name,description,categoryId);
+    }
 }

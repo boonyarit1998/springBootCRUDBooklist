@@ -1,17 +1,16 @@
 package com.restapi.booklists.entity;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@Table(name = "books")
 @Entity
+@Table(name = "book_lists")
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BookEntity {
+public class BookListEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,6 +20,4 @@ public class BookEntity {
 
     private String description;
 
-    @Column(name = "category_id")
-    private Integer categoryId;
 }
