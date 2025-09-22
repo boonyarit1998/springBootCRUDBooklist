@@ -1,4 +1,4 @@
-package com.restapi.booklists.model;
+package com.restapi.booklists.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,8 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommonResponse {
+public class ErrorResponse {
     private String status;
-    private Object resultData;
-    private Object resultMessage;
+    private String errorMessage;
 }

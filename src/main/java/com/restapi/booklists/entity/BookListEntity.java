@@ -1,13 +1,12 @@
 package com.restapi.booklists.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "book_lists")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class BookListEntity {
@@ -15,6 +14,17 @@ public class BookListEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id",nullable = false)
+    private UserEntity user ;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "book_id",nullable = false)
+    private BookEntity book ;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
 
     private String name;
 

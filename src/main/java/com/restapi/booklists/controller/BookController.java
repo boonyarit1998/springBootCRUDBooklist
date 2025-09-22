@@ -1,8 +1,8 @@
-package com.restapi.booklists.contrller;
+package com.restapi.booklists.controller;
 
 import com.restapi.booklists.entity.BookEntity;
-import com.restapi.booklists.model.CommonResponse;
-import com.restapi.booklists.model.ErrorResponse;
+import com.restapi.booklists.dto.CommonResponse;
+import com.restapi.booklists.dto.ErrorResponse;
 import com.restapi.booklists.service.BookService;
 import com.restapi.booklists.utility.bookConstant;
 import org.slf4j.Logger;
