@@ -25,6 +25,7 @@ public class BookListEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    private ReadingStatus status;
 
     private String name;
 

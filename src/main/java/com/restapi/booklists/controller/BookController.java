@@ -3,8 +3,9 @@ package com.restapi.booklists.controller;
 import com.restapi.booklists.entity.BookEntity;
 import com.restapi.booklists.dto.CommonResponse;
 import com.restapi.booklists.dto.ErrorResponse;
-import com.restapi.booklists.service.BookService;
+import com.restapi.booklists.service.BookServiceImpl;
 import com.restapi.booklists.utility.bookConstant;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -12,25 +13,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/book")
+@RequiredArgsConstructor
 public class BookController implements bookConstant {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final BookService bookService;
-
-    public BookController(BookService bookService){
-        this.bookService = bookService;
-    }
+    private final BookServiceImpl bookService;
 
     @GetMapping()
-    public ResponseEntity<Object> getBook() throws Exception{
+    public ResponseEntity<Object> getAllBooks() throws Exception{
         logger.info("start getBook");
         CommonResponse commonResponse = new CommonResponse();
         try {
-            List<BookEntity> book = bookService.getBook();
+            List<BookEntity> book = bookService.getAllBooks();
             commonResponse.setStatus(STATUS_SUCCESS);
             commonResponse.setResultData(book);
             return new ResponseEntity<>(commonResponse, HttpStatus.OK);
@@ -48,7 +47,7 @@ public class BookController implements bookConstant {
         logger.info("start getBookById");
         CommonResponse commonResponse = new CommonResponse();
         try {
-            BookEntity book = bookService.getBookById(id);
+            Optional<BookEntity> book = bookService.getBookById(id);
             commonResponse.setStatus(STATUS_SUCCESS);
             commonResponse.setResultData(book);
             return new ResponseEntity<>(commonResponse, HttpStatus.OK);
@@ -62,11 +61,11 @@ public class BookController implements bookConstant {
     }
 
     @PostMapping()
-    public ResponseEntity<Object> addBook(@RequestBody BookEntity bookEntity) throws Exception{
+    public ResponseEntity<Object> createBook(@RequestBody BookEntity bookEntity) throws Exception{
         logger.info("start addBook");
         CommonResponse commonResponse = new CommonResponse();
         try {
-            BookEntity book = bookService.addBook(bookEntity);
+            BookEntity book = bookService.createBook(bookEntity);
             commonResponse.setStatus(STATUS_SUCCESS);
             commonResponse.setResultData(book);
             return new ResponseEntity<>(commonResponse, HttpStatus.CREATED);
@@ -82,12 +81,12 @@ public class BookController implements bookConstant {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> editBook(@PathVariable Long id,@RequestBody BookEntity bookEdit) throws Exception{
+    public ResponseEntity<Object> updateBook(@PathVariable Long id,@RequestBody BookEntity bookEdit) throws Exception{
         logger.info("start editBook");
         CommonResponse commonResponse = new CommonResponse();
         System.out.println(bookEdit);
         try {
-            BookEntity book = bookService.editBook(id,bookEdit);
+            BookEntity book = bookService.updateBook(id,bookEdit);
             commonResponse.setStatus(STATUS_SUCCESS);
             commonResponse.setResultData(book);
             return new ResponseEntity<>(commonResponse, HttpStatus.CREATED);
@@ -105,9 +104,8 @@ public class BookController implements bookConstant {
         logger.info("start deleteBook");
         CommonResponse commonResponse = new CommonResponse();
         try {
-            String book = bookService.delete(id);
+            bookService.deleteBook(id);
             commonResponse.setStatus(STATUS_SUCCESS);
-            commonResponse.setResultData(book);
             return new ResponseEntity<>(commonResponse, HttpStatus.OK);
         }catch (Exception e) {
             ErrorResponse errorResponse = new ErrorResponse(STATUS_ERROR,e.getMessage());

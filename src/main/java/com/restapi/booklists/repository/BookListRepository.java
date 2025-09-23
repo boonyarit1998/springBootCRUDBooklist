@@ -13,10 +13,10 @@ import java.util.Optional;
 @Repository
 public interface BookListRepository extends JpaRepository<BookListEntity,Long>{
 
-    List<BookListRepository> findByUser (UserEntity user);
+    List<BookListEntity> findByUser (Optional<UserEntity> user);
 
-    List<BookListRepository> findByStatus (ReadingStatus status);
+    List<BookListEntity> findByUserAndStatus (UserEntity user,ReadingStatus status);
 
-    Optional<BookListRepository> findByUserAndBook(UserEntity user, BookEntity book);
+    Optional<BookListEntity> findByUserAndBook(UserEntity user, BookEntity book);
 
 }
