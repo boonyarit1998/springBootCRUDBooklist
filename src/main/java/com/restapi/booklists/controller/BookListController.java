@@ -1,13 +1,16 @@
 package com.restapi.booklists.controller;
 
+import com.restapi.booklists.dto.BookListRequestDto;
+import com.restapi.booklists.dto.BookResponseDTO;
 import com.restapi.booklists.dto.CommonResponse;
 import com.restapi.booklists.dto.ErrorResponse;
 import com.restapi.booklists.entity.BookEntity;
 import com.restapi.booklists.entity.BookListEntity;
 import com.restapi.booklists.entity.ReadingStatus;
 import com.restapi.booklists.entity.UserEntity;
-import com.restapi.booklists.service.BookListServiceImpl;
-import com.restapi.booklists.service.UserServiceImpl;
+import com.restapi.booklists.service.BookListService;
+import com.restapi.booklists.service.BookService;
+import com.restapi.booklists.service.UserService;
 import com.restapi.booklists.utility.bookConstant;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -26,9 +29,11 @@ public class BookListController implements bookConstant {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final BookListServiceImpl bookListService;
+    private final BookListService bookListService;
 
-    private final UserServiceImpl userService;
+    private final UserService userService;
+
+    private final BookService bookService;
 
     @GetMapping()
     public ResponseEntity<Object> getAllBookLists() throws Exception{
@@ -66,12 +71,19 @@ public class BookListController implements bookConstant {
     }
 
     @PostMapping()
-    public ResponseEntity<Object> createBookList(@RequestBody BookListEntity book) throws  Exception{
+    public ResponseEntity<Object> createBookList(@RequestBody BookListRequestDto book) throws  Exception{
         logger.info("Start createBookList");
         CommonResponse commonResponse = new CommonResponse();
+        BookListEntity newList = new BookListEntity();
         try{
-
-            BookListEntity bookList = bookListService.createBookList(book);
+            UserEntity user = userService.getUserById(book.getBookId()).orElse(null);
+            //BookResponseDTO bookadd = bookService.getBookById(book.getBookId()).orElse(null);
+            newList.setUser(user);
+            //newList.setBook(bookadd);
+            newList.setStatus(book.getStatus());
+            newList.setName(book.getName());
+            newList.setDescription(book.getDescription());
+            BookListEntity bookList = bookListService.createBookList(newList);
             commonResponse.setStatus(STATUS_SUCCESS);
             commonResponse.setResultData(bookList);
             return new ResponseEntity<>(commonResponse,HttpStatus.OK);

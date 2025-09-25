@@ -1,10 +1,10 @@
 package com.restapi.booklists.service;
 
+import com.restapi.booklists.dto.BookResponseDTO;
+import com.restapi.booklists.dto.CategoryResponseDTO;
 import com.restapi.booklists.entity.BookEntity;
 import com.restapi.booklists.repository.BookRepository;
-import com.restapi.booklists.service.Impl.BookService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,41 +12,41 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class BookServiceImpl implements BookService {
+public class BookService {
 
     private final BookRepository bookRepository;
 
 
-    @Override
+    public BookResponseDTO getBookById(Long id) {
+        BookEntity book = bookRepository.findById(id).orElse(null);
+        BookResponseDTO response = new BookResponseDTO(
+                book.getName(),
+                book.getDescription(),
+                new CategoryResponseDTO(book.getCategory().getCategory(),book.getCategory().getDescription())
+        );
+        return response;
+    }
+
     public List<BookEntity> getAllBooks() {
-        return bookRepository.findAll();
-    }
-
-    @Override
-    public Optional<BookEntity> getBookById(Long id) {
-        return bookRepository.findById(id);
+        return    bookRepository.findAll();
     }
 
 
-    @Override
     public BookEntity createBook(BookEntity book) {
         return bookRepository.save(book);
     }
 
-    @Override
     public BookEntity updateBook(Long id, BookEntity book) {
         BookEntity bookEntity = bookRepository.findById(id).orElse(null);
         if (bookEntity != null){
             bookEntity.setName(book.getName());
             bookEntity.setDescription(book.getDescription());
-            bookEntity.setCategoryId(book.getCategoryId());
             return bookRepository.save(bookEntity);
         }
 
         return null;
     }
 
-    @Override
     public void deleteBook(Long id) {
         Optional<BookEntity> bookEntity = bookRepository.findById(id);
         if(bookEntity != null) {
@@ -54,9 +54,8 @@ public class BookServiceImpl implements BookService {
         }
     }
 
-    @Override
-    public List<BookEntity> searchBooks(String name, String description, Integer categoryId) {
-        return bookRepository.findBookByCriteria(name,description,categoryId);
+    public List<BookEntity> searchBooks(String name, String description) {
+        return bookRepository.findBookByCriteria(name,description);
     }
 
 

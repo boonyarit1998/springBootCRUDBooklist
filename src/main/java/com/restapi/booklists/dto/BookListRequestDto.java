@@ -1,0 +1,13 @@
+package com.restapi.booklists.dto;
+
+import com.restapi.booklists.entity.ReadingStatus;
+import lombok.Data;
+
+@Data
+public class BookListRequestDto {
+    private Long userId;
+    private Long bookId;
+    private ReadingStatus status;
+    private String name;
+    private String description;
+}

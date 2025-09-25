@@ -3,7 +3,7 @@ package com.restapi.booklists.controller;
 import com.restapi.booklists.entity.UserEntity;
 import com.restapi.booklists.dto.CommonResponse;
 import com.restapi.booklists.dto.ErrorResponse;
-import com.restapi.booklists.service.UserServiceImpl;
+import com.restapi.booklists.service.UserService;
 import com.restapi.booklists.utility.bookConstant;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -21,7 +21,7 @@ import java.util.Optional;
 public class UserController implements bookConstant {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private final UserServiceImpl userService;
+    private final UserService userService;
 
     @GetMapping
     public ResponseEntity<Object> getAllUsers() {

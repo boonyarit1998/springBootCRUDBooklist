@@ -7,8 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommonResponse<T> {
-    private String status;
-    private T resultData;
-    private Object resultMessage;
+public class CategoryResponseDTO {
+    private String category ;
+    private String description;
 }

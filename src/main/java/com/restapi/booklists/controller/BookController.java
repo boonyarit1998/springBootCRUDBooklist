@@ -1,9 +1,10 @@
 package com.restapi.booklists.controller;
 
+import com.restapi.booklists.dto.BookResponseDTO;
 import com.restapi.booklists.entity.BookEntity;
 import com.restapi.booklists.dto.CommonResponse;
 import com.restapi.booklists.dto.ErrorResponse;
-import com.restapi.booklists.service.BookServiceImpl;
+import com.restapi.booklists.service.BookService;
 import com.restapi.booklists.utility.bookConstant;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -22,23 +23,23 @@ public class BookController implements bookConstant {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final BookServiceImpl bookService;
+    private final BookService bookService;
 
     @GetMapping()
     public ResponseEntity<Object> getAllBooks() throws Exception{
-        logger.info("start getBook");
-        CommonResponse commonResponse = new CommonResponse();
-        try {
-            List<BookEntity> book = bookService.getAllBooks();
-            commonResponse.setStatus(STATUS_SUCCESS);
-            commonResponse.setResultData(book);
-            return new ResponseEntity<>(commonResponse, HttpStatus.OK);
-        } catch (Exception e) {
-            ErrorResponse errorResponse = new ErrorResponse(STATUS_ERROR,e.getMessage());
-            return new ResponseEntity<>(errorResponse,HttpStatus.INTERNAL_SERVER_ERROR);
-        }finally {
-            logger.info("end getBook");
-        }
+        List<BookEntity> book = bookService.getAllBooks();
+        return ResponseEntity.ok().body(book);
+//        CommonResponse commonResponse = new CommonResponse();
+//        try {
+//            List<BookEntity> book = bookService.getAllBooks();
+//            commonResponse.setStatus(STATUS_SUCCESS);
+//            commonResponse.setResultData(book);
+//            return new ResponseEntity<>(commonResponse, HttpStatus.OK);
+//        } catch (Exception e) {
+//            ErrorResponse errorResponse = new ErrorResponse(STATUS_ERROR,e.getMessage());
+//            return new ResponseEntity<>(errorResponse,HttpStatus.INTERNAL_SERVER_ERROR);
+//        }finally {
+//        }
 
     }
 
@@ -47,7 +48,7 @@ public class BookController implements bookConstant {
         logger.info("start getBookById");
         CommonResponse commonResponse = new CommonResponse();
         try {
-            Optional<BookEntity> book = bookService.getBookById(id);
+            BookResponseDTO book = bookService.getBookById(id);
             commonResponse.setStatus(STATUS_SUCCESS);
             commonResponse.setResultData(book);
             return new ResponseEntity<>(commonResponse, HttpStatus.OK);
@@ -116,11 +117,11 @@ public class BookController implements bookConstant {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Object> searchBook(@RequestParam(required = false) String name,@RequestParam(required = false) String description ,@RequestParam(required = false) Integer categoryId) throws Exception{
+    public ResponseEntity<Object> searchBook(@RequestParam(required = false) String name,@RequestParam(required = false) String description ) throws Exception{
         logger.info("start searchBook");
         CommonResponse commonResponse = new CommonResponse();
         try {
-            List<BookEntity> book = bookService.searchBooks(name,description,categoryId);
+            List<BookEntity> book = bookService.searchBooks(name,description);
             commonResponse.setStatus(STATUS_SUCCESS);
             commonResponse.setResultData(book);
             return new ResponseEntity<>(commonResponse, HttpStatus.OK);
