@@ -1,7 +1,6 @@
 package com.restapi.booklists.controller;
 
-import com.restapi.booklists.dto.BookListRequestDto;
-import com.restapi.booklists.dto.BookResponseDTO;
+import com.restapi.booklists.dto.BookListRequestDTO;
 import com.restapi.booklists.dto.CommonResponse;
 import com.restapi.booklists.dto.ErrorResponse;
 import com.restapi.booklists.entity.BookEntity;
@@ -71,7 +70,7 @@ public class BookListController implements bookConstant {
     }
 
     @PostMapping()
-    public ResponseEntity<Object> createBookList(@RequestBody BookListRequestDto book) throws  Exception{
+    public ResponseEntity<Object> createBookList(@RequestBody BookListRequestDTO book) throws  Exception{
         logger.info("Start createBookList");
         CommonResponse commonResponse = new CommonResponse();
         BookListEntity newList = new BookListEntity();

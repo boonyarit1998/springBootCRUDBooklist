@@ -1,5 +1,7 @@
 package com.restapi.booklists.service;
 
+import com.restapi.booklists.dto.CategoryRequestDTO;
+import com.restapi.booklists.dto.CategoryResponseDTO;
 import com.restapi.booklists.entity.BookEntity;
 import com.restapi.booklists.entity.CategoryEntity;
 import com.restapi.booklists.repository.CategoryRepository;
@@ -14,25 +16,29 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
 
-    public List<CategoryEntity> getAllCategory(){
-        return categoryRepository.findAll();
+    public List<CategoryResponseDTO> getAllCategory(){
+            List <CategoryResponseDTO>  response =  categoryRepository.findAll().stream().map(CategoryResponseDTO::toDTO).toList();
+        return response;
     }
 
-    public CategoryEntity getCategoryById(Long id){
-        return categoryRepository.findById(id).orElse(null);
+    public CategoryResponseDTO getCategoryById(Long id){
+        CategoryEntity category =  categoryRepository.findById(id).orElse(null);
+        return CategoryResponseDTO.toDTO(category);
     }
 
-    public CategoryEntity createCategory(CategoryEntity categoryEntity){
-        return categoryRepository.save(categoryEntity);
+    public CategoryResponseDTO createCategory(CategoryRequestDTO category){
+            CategoryEntity entity = categoryRepository.save(CategoryRequestDTO.toEntity(category));
+        return CategoryResponseDTO.toDTO(entity);
     }
 
-    public CategoryEntity updateCategory(Long id,CategoryEntity categoryEntity){
+    public CategoryResponseDTO updateCategory(Long id,CategoryRequestDTO request){
          CategoryEntity category = categoryRepository.findById(id).orElse(null);
 
          if(category != null){
-             category.setCategory(categoryEntity.getCategory());
-             category.setDescription(categoryEntity.getCategory());
-             return categoryRepository.save(category);
+             category.setCategory(request.getCategory());
+             category.setDescription(request.getDescription());
+             CategoryEntity entity = categoryRepository.save(category);
+             return CategoryResponseDTO.toDTO(entity);
          }
          return  null;
     }

@@ -4,7 +4,7 @@ import com.restapi.booklists.entity.ReadingStatus;
 import lombok.Data;
 
 @Data
-public class BookListRequestDto {
+public class BookListRequestDTO {
     private Long userId;
     private Long bookId;
     private ReadingStatus status;

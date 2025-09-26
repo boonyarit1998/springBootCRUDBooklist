@@ -1,5 +1,6 @@
 package com.restapi.booklists.controller;
 
+import com.restapi.booklists.dto.BookRequestDTO;
 import com.restapi.booklists.dto.BookResponseDTO;
 import com.restapi.booklists.entity.BookEntity;
 import com.restapi.booklists.dto.CommonResponse;
@@ -26,94 +27,36 @@ public class BookController implements bookConstant {
     private final BookService bookService;
 
     @GetMapping()
-    public ResponseEntity<Object> getAllBooks() throws Exception{
-        List<BookEntity> book = bookService.getAllBooks();
+    public ResponseEntity<List<BookResponseDTO>> getAllBooks() throws Exception{
+        List<BookResponseDTO> book = bookService.getAllBooks();
         return ResponseEntity.ok().body(book);
-//        CommonResponse commonResponse = new CommonResponse();
-//        try {
-//            List<BookEntity> book = bookService.getAllBooks();
-//            commonResponse.setStatus(STATUS_SUCCESS);
-//            commonResponse.setResultData(book);
-//            return new ResponseEntity<>(commonResponse, HttpStatus.OK);
-//        } catch (Exception e) {
-//            ErrorResponse errorResponse = new ErrorResponse(STATUS_ERROR,e.getMessage());
-//            return new ResponseEntity<>(errorResponse,HttpStatus.INTERNAL_SERVER_ERROR);
-//        }finally {
-//        }
 
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getBookById(@PathVariable Long id) throws Exception{
-        logger.info("start getBookById");
-        CommonResponse commonResponse = new CommonResponse();
-        try {
-            BookResponseDTO book = bookService.getBookById(id);
-            commonResponse.setStatus(STATUS_SUCCESS);
-            commonResponse.setResultData(book);
-            return new ResponseEntity<>(commonResponse, HttpStatus.OK);
-
-        } catch (Exception e) {
-            ErrorResponse errorResponse = new ErrorResponse(STATUS_ERROR,e.getMessage());
-            return new ResponseEntity<>(errorResponse,HttpStatus.INTERNAL_SERVER_ERROR);
-        }finally {
-            logger.info("end getBookById");
-        }
+    public ResponseEntity<BookResponseDTO> getBookById(@PathVariable Long id) throws Exception{
+        BookResponseDTO book = bookService.getBookById(id);
+        return ResponseEntity.ok().body(book);
     }
 
     @PostMapping()
-    public ResponseEntity<Object> createBook(@RequestBody BookEntity bookEntity) throws Exception{
-        logger.info("start addBook");
-        CommonResponse commonResponse = new CommonResponse();
-        try {
-            BookEntity book = bookService.createBook(bookEntity);
-            commonResponse.setStatus(STATUS_SUCCESS);
-            commonResponse.setResultData(book);
-            return new ResponseEntity<>(commonResponse, HttpStatus.CREATED);
-
-        } catch (Exception e) {
-            ErrorResponse errorResponse = new ErrorResponse(STATUS_ERROR,e.getMessage());
-            return new ResponseEntity<>(errorResponse,HttpStatus.INTERNAL_SERVER_ERROR);
-        } finally {
-            logger.info("end addBook");
-        }
-
+    public ResponseEntity<BookResponseDTO> createBook(@RequestBody BookRequestDTO bookEntity) throws Exception{
+        BookResponseDTO response = bookService.createBook(bookEntity);
+        return ResponseEntity.ok().body(response);
 
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateBook(@PathVariable Long id,@RequestBody BookEntity bookEdit) throws Exception{
-        logger.info("start editBook");
-        CommonResponse commonResponse = new CommonResponse();
-        System.out.println(bookEdit);
-        try {
-            BookEntity book = bookService.updateBook(id,bookEdit);
-            commonResponse.setStatus(STATUS_SUCCESS);
-            commonResponse.setResultData(book);
-            return new ResponseEntity<>(commonResponse, HttpStatus.CREATED);
+    public ResponseEntity<BookResponseDTO> updateBook(@PathVariable Long id,@RequestBody BookRequestDTO bookEdit) throws Exception{
+        BookResponseDTO book = bookService.updateBook(id,bookEdit);
+        return new ResponseEntity<>(book, HttpStatus.CREATED);
 
-        } catch (Exception e) {
-            ErrorResponse errorResponse = new ErrorResponse(STATUS_ERROR,e.getMessage());
-            return new ResponseEntity<>(errorResponse,HttpStatus.INTERNAL_SERVER_ERROR);
-        }finally {
-            logger.info("end editBook");
-        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteBook(@PathVariable Long id) throws Exception{
-        logger.info("start deleteBook");
-        CommonResponse commonResponse = new CommonResponse();
-        try {
+    public ResponseEntity<Void> deleteBook(@PathVariable Long id) throws Exception{
             bookService.deleteBook(id);
-            commonResponse.setStatus(STATUS_SUCCESS);
-            return new ResponseEntity<>(commonResponse, HttpStatus.OK);
-        }catch (Exception e) {
-            ErrorResponse errorResponse = new ErrorResponse(STATUS_ERROR,e.getMessage());
-            return new ResponseEntity<>(errorResponse,HttpStatus.INTERNAL_SERVER_ERROR);
-        }finally {
-            logger.info("end deleteBook");
-        }
+         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/search")
