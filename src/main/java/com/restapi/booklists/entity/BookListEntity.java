@@ -3,6 +3,9 @@ package com.restapi.booklists.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "book_list")
 @Getter
@@ -15,17 +18,9 @@ public class BookListEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id",nullable = false)
-    private UserEntity user ;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "book_id",nullable = false)
-    private BookEntity book ;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ReadingStatus status;
+    @OneToMany(mappedBy = "bookList", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BookListItemEntity> items = new ArrayList<>();
 
     private String name;
 
