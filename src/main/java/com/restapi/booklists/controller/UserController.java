@@ -1,5 +1,6 @@
 package com.restapi.booklists.controller;
 
+import com.restapi.booklists.dto.LoginRequestDTO;
 import com.restapi.booklists.entity.UserEntity;
 import com.restapi.booklists.dto.CommonResponse;
 import com.restapi.booklists.dto.ErrorResponse;
@@ -20,8 +21,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserController implements bookConstant {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     private final UserService userService;
 
+    @GetMapping("/profile")
+    public ResponseEntity<String> profile(LoginRequestDTO request) {
+        return ResponseEntity.ok("Hello, " + request.getEmail());
+    }
 
 }

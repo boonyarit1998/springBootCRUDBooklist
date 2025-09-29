@@ -17,4 +17,8 @@ public class UserService {
     public Optional<UserEntity> findByEmail(String Email){
         return  userRepository.findByEmail(Email);
     }
+
+    public void registerUser(UserEntity user){
+        userRepository.save(user);
+    }
 }

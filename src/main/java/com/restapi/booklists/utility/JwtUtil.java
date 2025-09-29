@@ -1,36 +1,53 @@
 package com.restapi.booklists.utility;
 
-import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Jwts;
-
-import javax.crypto.SecretKey;
-import java.util.Date;
+import org.springframework.beans.factory.annotation.Value;
+import java.security.Key;
+import java.util.*;
 
 @Component
 public class JwtUtil {
-    private final SecretKey secretKey = Keys.hmacShaKeyFor("my-super-secret-key-which-is-very-long".getBytes());
 
-    public String generateToken(String email, String role){
+    @Value("${jwt.secret}")
+    private String secret;
+
+    @Value("${jwt.expiration}")
+    private long jwtExpirationMs;
+
+    private Key key() {
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
+    }
+
+
+    public String generateToken(String email, Set<String> roles){
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("roles", roles);
         return  Jwts.builder()
                 .setSubject(email)
+                .setClaims(claims)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
-                .signWith(secretKey)
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
+                .signWith(key(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public void validateToken(String token) {
-        try {
-            Jwts.parser().verifyWith((SecretKey) secretKey)
-                    .build()
-                    .parseSignedClaims(token);
-        } catch (SignatureException e) {
-            throw new JwtException("Invalid JWT signature");
-        } catch (JwtException e) {
-            throw new JwtException("Invalid JWT");
-        }
+    public String extractEmail(String token){
+        return Jwts.parser().setSigningKey(key()).build().parseClaimsJws(token).getBody().getSubject();
+    }
+
+    public Set<String> extractRole(String token){
+        return new HashSet<>((List<String>) Jwts.parser().setSigningKey(key()).build().parseClaimsJws(token).getBody().get("role"));
+    }
+
+    private boolean isTokenExpired(String token) {
+        return Jwts.parser().setSigningKey(key()).build().parseClaimsJws(token).getBody().getExpiration().before(new Date());
+    }
+
+    public boolean  validateToken(String token,String email) {
+        return email.equals(extractEmail(token)) && !isTokenExpired(token);
     }
 }
