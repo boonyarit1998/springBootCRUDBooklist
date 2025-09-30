@@ -1,12 +1,14 @@
 package com.restapi.booklists.utility;
 
+import com.restapi.booklists.entity.UserEntity;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
-import java.security.Key;
+
+import javax.crypto.SecretKey;
 import java.util.*;
 
 @Component
@@ -18,17 +20,17 @@ public class JwtUtil {
     @Value("${jwt.expiration}")
     private long jwtExpirationMs;
 
-    private Key key() {
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
+    private SecretKey key() {
+        return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
 
-    public String generateToken(String email, Set<String> roles){
+    public String generateToken(UserEntity user){
         Map<String, Object> claims = new HashMap<>();
-        claims.put("roles", roles);
+        claims.put("role", user.getRole().name());
         return  Jwts.builder()
-                .setSubject(email)
-                .setClaims(claims)
+                .setSubject(user.getEmail())
+                .claim("role", user.getRole().name())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
                 .signWith(key(), SignatureAlgorithm.HS256)
@@ -36,11 +38,22 @@ public class JwtUtil {
     }
 
     public String extractEmail(String token){
-        return Jwts.parser().setSigningKey(key()).build().parseClaimsJws(token).getBody().getSubject();
+        Claims claims = Jwts.parser()
+                .setSigningKey(key())  // ต้องเป็น SecretKey
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.getSubject(); // <--- ใช้ได้ตรงนี้
     }
 
-    public Set<String> extractRole(String token){
-        return new HashSet<>((List<String>) Jwts.parser().setSigningKey(key()).build().parseClaimsJws(token).getBody().get("role"));
+    public String extractRole(String token){
+        Claims claims = Jwts.parser()
+                .setSigningKey(key())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.get("role", String.class);
     }
 
     private boolean isTokenExpired(String token) {

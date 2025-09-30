@@ -11,6 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -40,16 +41,12 @@ public class JwtFilter extends OncePerRequestFilter {
                 return;
             }
         }
-
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserEntity user = userRepository.findByEmail(email).orElse(null);
             if (user != null && jwtUtil.validateToken(token, user.getEmail())) {
-                Set<String> roles = jwtUtil.extractRole(token);
-                List<SimpleGrantedAuthority> authorities = roles.stream()
-                        .map(SimpleGrantedAuthority::new)
-                        .toList();
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(email, null, authorities);
+                String role = jwtUtil.extractRole(token);
+                List<SimpleGrantedAuthority> authorities =  List.of(new SimpleGrantedAuthority("ROLE_" + role));
+                UsernamePasswordAuthenticationToken authToken =  new UsernamePasswordAuthenticationToken(email, null, authorities);
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }

@@ -1,5 +1,6 @@
 package com.restapi.booklists.service;
 
+import com.restapi.booklists.dto.UserResponseDTO;
 import com.restapi.booklists.entity.UserEntity;
 import com.restapi.booklists.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ public class UserService {
         return  userRepository.findByEmail(Email);
     }
 
-    public void registerUser(UserEntity user){
-        userRepository.save(user);
+    public UserResponseDTO registerUser(UserEntity entity){
+       return UserResponseDTO.toDTO(userRepository.save(entity));
     }
 }

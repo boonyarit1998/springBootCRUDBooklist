@@ -1,10 +1,12 @@
 package com.restapi.booklists.controller;
 
 import com.restapi.booklists.dto.LoginRequestDTO;
+import com.restapi.booklists.dto.UserResponseDTO;
 import com.restapi.booklists.entity.UserEntity;
 import com.restapi.booklists.dto.CommonResponse;
 import com.restapi.booklists.dto.ErrorResponse;
 import com.restapi.booklists.service.UserService;
+import com.restapi.booklists.utility.JwtUtil;
 import com.restapi.booklists.utility.bookConstant;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -24,9 +26,14 @@ public class UserController implements bookConstant {
 
     private final UserService userService;
 
+    private final JwtUtil jwtUtil;
+
     @GetMapping("/profile")
-    public ResponseEntity<String> profile(LoginRequestDTO request) {
-        return ResponseEntity.ok("Hello, " + request.getEmail());
+    public ResponseEntity<UserResponseDTO> profile(@RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.replace("Bearer ", "");
+        String email = jwtUtil.extractEmail(token);
+        UserEntity user = userService.findByEmail(email).orElse(null);
+        return ResponseEntity.ok().body(UserResponseDTO.toDTO(user));
     }
 
 }

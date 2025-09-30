@@ -4,6 +4,7 @@ import com.restapi.booklists.utility.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -22,7 +23,13 @@ public class SecurityConfig {
         return http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/booklist/**").permitAll()
+                        .requestMatchers("/api/category/**").permitAll()
+                        .requestMatchers("/api/user/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/book/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/book/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/book/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/book/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
