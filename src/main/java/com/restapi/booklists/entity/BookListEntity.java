@@ -1,6 +1,7 @@
 package com.restapi.booklists.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -22,8 +23,10 @@ public class BookListEntity {
     @OneToMany(mappedBy = "bookList", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BookListItemEntity> items = new ArrayList<>();
 
+    @NotNull
     private String name;
 
+    @NotNull
     private String description;
 
 }

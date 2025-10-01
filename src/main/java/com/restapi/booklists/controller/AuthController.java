@@ -5,8 +5,12 @@ import com.restapi.booklists.dto.LoginResponseDTO;
 import com.restapi.booklists.dto.UserRequestDTO;
 import com.restapi.booklists.entity.Role;
 import com.restapi.booklists.entity.UserEntity;
+import com.restapi.booklists.exception.ResourceNotFoundException;
 import com.restapi.booklists.service.UserService;
 import com.restapi.booklists.utility.JwtUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,6 +22,7 @@ import java.util.Set;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
+@Tag(name = "Authen", description = "Authen management APIs")
 public class AuthController {
 
     private final PasswordEncoder passwordEncoder;
@@ -25,7 +30,8 @@ public class AuthController {
     private final JwtUtil jwtUtil;
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody UserRequestDTO request) {
+    @Operation(summary = "Register user", description = "Register new User")
+    public ResponseEntity<String> register(@Valid @RequestBody UserRequestDTO request) {
         if (userService.findByEmail(request.getEmail()).isPresent()) {
             return ResponseEntity.badRequest().body("Email already exists");
         }
@@ -39,11 +45,10 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(
-            @RequestBody LoginRequestDTO loginRequestDTO) {
+    @Operation(summary = "Login", description = "User and Admin login")
+    public ResponseEntity<LoginResponseDTO> login( @Valid @RequestBody LoginRequestDTO loginRequestDTO) {
 
-        UserEntity user = userService.findByEmail(loginRequestDTO.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        UserEntity user = userService.findByEmail(loginRequestDTO.getEmail()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (!passwordEncoder.matches(loginRequestDTO.getPassword(), user.getPassword())) {
             return ResponseEntity.badRequest().build();

@@ -4,6 +4,7 @@ import com.restapi.booklists.dto.BookRequestDTO;
 import com.restapi.booklists.dto.BookResponseDTO;
 import com.restapi.booklists.entity.BookEntity;
 import com.restapi.booklists.entity.CategoryEntity;
+import com.restapi.booklists.exception.ResourceNotFoundException;
 import com.restapi.booklists.repository.BookRepository;
 import com.restapi.booklists.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class BookService {
 
 
     public BookResponseDTO createBook(BookRequestDTO book) {
-        CategoryEntity category = categoryRepository.findById(book.getCategoryId()).orElse(null);
+        CategoryEntity category = categoryRepository.findById(book.getCategoryId()).orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + book.getCategoryId()));
 
         BookEntity newBook = new BookEntity();
         newBook.setName(book.getName());
